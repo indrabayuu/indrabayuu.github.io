@@ -8,7 +8,8 @@ media_subpath: /assets/post/quantization
 image:
   path: /what-is-quantization.jpg
   alt:
-comments: true 
+comments: true
+math: true
 ---
 
 ## Introduction
@@ -34,6 +35,8 @@ When it comes to **quantization**, we move away from floating-point formats and
 ## Quantization
 
 Okey, back to the main topics. **What is Quantization?** Quantization is a technique aimed to reducing the computational and memory costs of running inference. It works by representing the weights and activations with low-precision data types like 8-bit integers (int8) instead of the usual 32-bit floating point (float32). For example, if you were to run Llama 2-7B in full precision (float32), it would required 28GB of RAM. However, with quantization using 8-bit (int8), you'd only need 7GB of RAM. Such a big difference RIGHT!! 😁 
+
+<!-- Block math, keep all blank lines -->
 
 $$
 \text{Memory} = \text{Number of Parameters (in Billions)} \times \frac{\text{Total Bit Number}}{8}
