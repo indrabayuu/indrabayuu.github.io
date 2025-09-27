@@ -327,10 +327,10 @@ The script is same like before, we just add `-s` command:
 
 {%
   include embed/video.html
-  src='example-2.mov'
+  src='/example-2.mov'
   types='mov'
   title='English Version'
-  autoplay=true
+  autoplay=false
   loop=false
   muted=false
 %}
@@ -402,10 +402,10 @@ Once again, the script as same like before but adjust it little by adding `-l`, 
 
 {%
   include embed/video.html
-  src='example-3.mov'
+  src='/example-3.mov'
   types='mov'
   title='Indonesian Version'
-  autoplay=true
+  autoplay=false
   loop=false
   muted=false
 %}
