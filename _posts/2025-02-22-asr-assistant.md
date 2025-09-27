@@ -328,7 +328,7 @@ The script is same like before, we just add `-s` command:
 {%
   include embed/video.html
   src='example-2.mov'
-  types='ogg|mov'
+  types='mov'
   title='English Version'
   autoplay=true
   loop=false
@@ -403,7 +403,7 @@ Once again, the script as same like before but adjust it little by adding `-l`, 
 {%
   include embed/video.html
   src='example-3.mov'
-  types='ogg|mov'
+  types='mov'
   title='Indonesian Version'
   autoplay=true
   loop=false
