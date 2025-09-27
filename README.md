@@ -1,6 +1,4 @@
-# Indrabayu's BlogPost
-This repo holds my blog on [indrabayuu.github.io](https://indrabayuu.github.io)  
-and runs under [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) and [Jekyll](https://jekyllrb.com/).
+This repo holds my blog on [indrabayuu.github.io](https://indrabayuu.github.io) and runs under [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) and [Jekyll](https://jekyllrb.com/).
 
 ## Chirpy License
 
