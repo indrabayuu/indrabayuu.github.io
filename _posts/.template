@@ -1,0 +1,13 @@
+---
+title:
+description:
+date: 2025-01-25 19:18:01 +0700 # YYYY-MM-DD HH:MM:SS +0700
+categories: [Tutorial]
+tags: [quantization, llm] # Tags should be in lowercase and no space
+media_subpath: /assets/post/quantization # Media path, please create the folder first
+image:
+  path: /what-is-quantization.jpg # Thumbnail path
+  alt:
+comments: true
+---
+
