@@ -12,7 +12,7 @@ image:
 
 # Introduction
 
-Today, Large Language Models (LLMs) are gaining popularity, especially with the launch of ChatGPT, Claude, Gemini, and more. Many open-source models are freely available and can be accessed through [huggingface.co](http://huggingface.co/). However, when you try to run these models on your device, you might notice that they are too large for your computer. But fear not! That's where quantization comes to the rescue.
+Today, Large Language Models (LLMs) are gaining popularity, especially with the launch of ChatGPT, Claude, Gemini, and more. Many open-source models are freely available and can be accessed through [huggingface.co](https://huggingface.co/). However, when you try to run these models on your device, you might notice that they are too large for your computer. But fear not! That's where quantization comes to the rescue.
 
 # Precision?
 
