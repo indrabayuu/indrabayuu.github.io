@@ -19,7 +19,7 @@ Artificial Intelligence (AI) has come a long way, enabling machines to interact 
 
 In this guide, we’ll explore the creation of an AI assistant that combines **speech recognition** and **text generation**. Along the way, you’ll encounter a critical concept called **quantization**, which helps optimize AI models for better performance. If you're new to quantization, I recommend checking out my blog for an introduction:
 
-[What is Quantization?](https://indrabayuu.github.io/posts/what-is-quantization/)
+[What is Quantization?](https://indrabayuu.github.io/posts/quantization/)
 
 ### Speech Recognition
 
