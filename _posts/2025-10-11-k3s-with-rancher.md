@@ -1,6 +1,6 @@
 ---
 title: Spinning up Kubernetes with K3s and Rancher
-description: Deploy Kubernetes with K3s and Rancher as cluster management
+description: Deploy Kubernetes with K3s and Rancher as cluster management on AWS Cloud
 date: 2025-10-11 18:19:30 +0700
 categories: [Tutorial]
 tags: [kubernetes,k3s,rancher]
@@ -134,16 +134,16 @@ Verify K3s installation:
 sudo systemctl status k3s
 ```
 
-#### Step 3. Configure kubectl Access
+#### Step 3. Configure `kubectl` Access
 
-Enable kubectl command auto-completion:
+Enable `kubectl` command auto-completion:
 
 ```bash
 echo "source <(kubectl completion bash)" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-Create kubectl config directory and copy kubeconfig:
+Create `kubectl` config directory and copy `kubeconfig`:
 
 ```bash
 mkdir -p ~/.kube
@@ -151,7 +151,7 @@ sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 sudo chown $(id -u):$(id -g) ~/.kube/config
 ```
 
-Test kubectl access:
+Test `kubectl` access:
 
 ```bash
 kubectl get nodes
@@ -355,6 +355,8 @@ https://rancher.<YOUR_DOMAIN>.sslip.io
 
 > Immediately change the default admin password after first login to a unique, strong password. Navigate to: Account & API Keys → Change Password.
 {: .prompt-warning }
+
+![Change Password](/change-password.png)
 
 ## Post-Installation Security Hardening
 
