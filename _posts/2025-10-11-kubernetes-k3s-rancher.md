@@ -4,7 +4,7 @@ description: Deploy Kubernetes with K3s and Rancher as cluster management on AWS
 date: 2025-10-11 18:19:30 +0700
 categories: [Tutorial]
 tags: [kubernetes,k3s,rancher]
-media_subpath: /assets/post/k3s-with-rancher
+media_subpath: /assets/post/kubernetes-k3s-rancher
 image:
   path: /thumbnail.jpg
   alt:
