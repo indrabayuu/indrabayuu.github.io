@@ -32,7 +32,7 @@ First, create a dedicated namespace for your projects. This would use accross al
 kubectl create namespace development
 ```
 
-> Make sure all the `namespaces` in the Kubernetes manifests are the same (except for the GitLab Runner). This makes it easier to share the configuration and data across multiple `Kubernetes/Kind`, unless you specifically need to use different `namespaces` and know how to manage that.
+> Make sure all the `namespaces` in the Kubernetes manifests are the same (except for the GitLab Runner). This makes it easier to share the configurations and data across multiple `Kubernetes/kind`, unless you specifically need to use different `namespaces` and know how to manage that.
 {: .prompt-danger }
 
 ## Prepare IAM Role
@@ -408,7 +408,7 @@ Click **Add variable** and configure:
 ## Let's Try the CI/CD Pipeline
 Now that everything is configured, let's create a complete CI/CD pipeline. You'll need two files in your project root: `.gitlab-ci.yml` for the pipeline definition and `deployment.yaml` for the Kubernetes manifest.
 
-### 1. Create `.gitlab-ci.yml`
+### 1. Create **.gitlab-ci.yml**
 Create the CI/CD pipeline configuration:
 
 ```yaml
@@ -420,7 +420,6 @@ variables:
   AWS_ACCOUNT_ID: <AWS_ACCOUNT_ID>
   AWS_REGION: "ap-southeast-3"
   ECR_REGISTRY: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-  IMAGE_NAME: <IMAGE_NAME>
   SERVICE: <SERVICE>
   NAMESPACE: development
 
@@ -441,9 +440,9 @@ build-and-push:
     - apk add --no-cache aws-cli
     - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
   script:
-    - docker build -t ${IMAGE_NAME} .
-    - docker tag ${IMAGE_NAME}:latest ${ECR_REGISTRY}/${IMAGE_NAME}:latest
-    - docker push ${ECR_REGISTRY}/${IMAGE_NAME}:latest
+    - docker build -t ${SERVICE} .
+    - docker tag ${SERVICE}:latest ${ECR_REGISTRY}/${SERVICE}:latest
+    - docker push ${ECR_REGISTRY}/${SERVICE}:latest
   only:
     - main
 
@@ -471,11 +470,10 @@ deploy:
 
 **Required Variable Changes:**
 - `<AWS_ACCOUNT_ID>` - Your AWS account ID (e.g., `123456789012`)
-- `<IMAGE_NAME>` - Your Docker image name (e.g., `my-app`)
-- `<SERVICE>` - Your Kubernetes deployment name (must match `deployment.yaml`)
+- `<SERVICE>` - Your Docker image or service name (e.g., `my-app`). Must be match with `deployment.yaml` below
 
-### 2. Create `deployment.yaml`
-This is just the Kubernetes manifest, can contain `Kubernetes/Kind` like `deployments`, `services`, `ingress`, and more. Below is the minimal version and just example:
+### 2. Create **deployment.yaml**
+This is just the Kubernetes manifest for your application, contains `Kubernetes/kind` like `Deployment`, `Services`, `Ingress`, and more. Below is the minimal version and just an example:
 
 ```yaml
 apiVersion: apps/v1
