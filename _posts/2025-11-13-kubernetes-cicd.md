@@ -605,7 +605,7 @@ You've successfully set up automated AWS ECR authentication for your Kubernetes 
 
 You now have GitLab Runner successfully integrated with your Kubernetes cluster! The runner is configured to use AWS ECR credentials and is ready to execute CI/CD pipelines. With automated secret renewal in place, your pipeline will run smoothly without manual intervention.
 
-✅ **AWS ECR Setup** - Secure private registry with IAM Roles
-✅ **Automated Authentication** - Token renewal every 11 hours via CronJob
-✅ **GitLab Runner Integration** - Docker-in-Docker builds in Kubernetes
-✅ **Complete CI/CD Pipeline** - Automated build, push, and deployment
+✅ **AWS ECR Setup** - Secure private registry with IAM Roles</br>
+✅ **Automated Authentication** - Token renewal every 11 hours via CronJob</br>
+✅ **GitLab Runner Integration** - Docker-in-Docker builds in Kubernetes</br>
+✅ **Complete CI/CD Pipeline** - Automated build, push, and deployment</br>
