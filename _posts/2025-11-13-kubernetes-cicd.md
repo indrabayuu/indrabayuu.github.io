@@ -7,7 +7,7 @@ tags: [kubernetes,k3s,rancher,gitlab,ecr,cicd]
 media_subpath: /assets/post/kubernetes-cicd
 image:
   path: /thumbnail.jpg
-  alt: Kubernetes CI/CD Pipeline Architecture
+  alt:
 comments: true
 ---
 
@@ -25,8 +25,15 @@ This guide covers best practices for integrating GitLab Runner with your Kuberne
 - AWS Console access with appropriate permissions
 - GitLab account (self-hosted or GitLab.com)
 
-> Make sure all the `namespace` for all the Kubernetes manifests here are on the same `namespace` (except for Gitlab Runner). This would be helpful to sharing the same  manifest acrross multiple kind, unless you know how to share across different `namespace`. Here I'm using `namespace=development`.
-{: .prompt-tip }
+## Create Namespace
+First, create a dedicated namespace for your projects. This would use accross all the manifest in this tutorial. Here I'm using `development`:
+
+```bash
+kubectl create namespace development
+```
+
+> Make sure all the `namespaces` in the Kubernetes manifests are the same (except for the GitLab Runner). This makes it easier to share the configuration and data across multiple `Kubernetes/Kind`, unless you specifically need to use different `namespaces` and know how to manage that.
+{: .prompt-danger }
 
 ## Prepare IAM Role
 We need to create an IAM Role to allow AWS ECR to be accessed from EC2 instances where Kubernetes is running.
@@ -107,16 +114,7 @@ Select the IAM Role we just created (`KubernetesCluster`) and click **Update IAM
 ## Prepare AWS ECR Authentication on Kubernetes
 By default, AWS ECR requires authentication tokens even when using IAM Roles. The IAM Role we created grants permission to fetch authorization tokens. However, these tokens expire after 12 hours, so we need to automate the token renewal process using a Kubernetes CronJob.
 
-### 1. Create Namespace
-First, create a dedicated namespace for managing private registry credentials:
-
-```bash
-kubectl create namespace development
-```
-
-You can use a different namespace name if preferred, but remember to update it in subsequent commands.
-
-### 2. Create Service Account and RBAC
+### 1. Create Service Account and RBAC
 Create a ServiceAccount with the necessary permissions to manage secrets:
 
 ```bash
@@ -153,7 +151,7 @@ subjects:
 EOF
 ```
 
-### 3. Create Initial Registry Secret
+### 2. Create Initial Registry Secret
 Kubernetes stores sensitive data like registry credentials in Secrets. We'll use the `docker-registry` secret type:
 
 ```bash
@@ -171,7 +169,7 @@ kubectl create secret docker-registry ecr-secret \
 - The password is dynamically fetched using AWS CLI
 - This secret is valid for 12 hours
 
-### 4. Create ConfigMap for Renewal Script
+### 3. Create ConfigMap for Renewal Script
 Create a ConfigMap containing the script to renew ECR credentials:
 
 ```bash
@@ -218,7 +216,7 @@ EOF
 > **Why use ConfigMap?** If we embed the script directly in the CronJob, the ECR token gets cached and won't refresh properly. Using a ConfigMap ensures the script executes fresh each time.
 {: .prompt-tip }
 
-### 5. Deploy CronJob for Token Renewal
+### 4. Deploy CronJob for Token Renewal
 Finally, create a CronJob that runs every 11 hours to refresh the ECR token before it expires:
 
 ```bash
@@ -264,7 +262,7 @@ EOF
 - Mounts the ConfigMap as a volume containing the renewal script
 - Maintains history of the last 3 successful and 3 failed jobs for debugging
 
-### 6. Verify CronJob Setup
+### 5. Verify CronJob Setup
 Check if the CronJob was created successfully:
 
 ```bash
@@ -311,13 +309,13 @@ helm repo add gitlab https://charts.gitlab.io
 helm repo update
 ```
 
-Create a custom manifest file for the GitLab Runner configuration:
+Create a custom helm values file for the GitLab Runner configuration:
 
 ```bash
 nano gitlab-runner-values.yaml
 ```
 
-Paste this manifest and update the necessary values:
+Paste this helm values and update the necessary values:
 
 ```yaml
 gitlabUrl: {GITLAB_URL}
@@ -330,7 +328,7 @@ runners:
         namespace = "{{.Release.Namespace}}"
         image = "docker:24-dind"
         privileged = true
-        helper_image = "gitlab/gitlab-runner-helper:x86_64-v18.4.0"
+        helper_image = "gitlab/gitlab-runner-helper:latest"
         node_selector = { "kubernetes.io/arch" = "amd64" }
       [[runners.kubernetes.volumes.empty_dir]]
         name = "docker-certs"
@@ -374,14 +372,14 @@ kubectl get pods -n gitlab-runner -o wide
 kubectl logs -n gitlab-runner -l app=gitlab-runner
 ```
 
-Return to GitLab and verify the runner shows as **Online** (green indicator).
+Return to GitLab and verify the runner shows as `Online` (green indicator).
 
 ![GitLab Runner 3](/gitlab-runner-3.jpg)
 
 ### 3. Configure Kubernetes Access for Deployment
 To enable deployments to your Kubernetes cluster, we need to configure `KUBECONFIG` as a CI/CD variable. This allows GitLab Runner to authenticate and deploy to your cluster.
 
-#### a. Get `KUBECONFIG`
+#### a. Get KUBECONFIG
 Extract the `KUBECONFIG` content with your master node's IP address:
 
 ```bash
@@ -395,7 +393,7 @@ Replace `{MASTER_PRIVATE_IP}` with your master node's private IP address (availa
 
 Copy the entire encoded output (it will be a very long string).
 
-#### b. Set `KUBECONFIG` on GitLab CI/CD Variable
+#### b. Set KUBECONFIG on GitLab CI/CD Variable
 Navigate to GitLab -> Your Group -> **Settings** (left sidebar) -> **CI/CD** -> Expand **Variables**
 
 ![GitLab Runner 4](/gitlab-runner-4.jpg)
@@ -476,11 +474,8 @@ deploy:
 - `<IMAGE_NAME>` - Your Docker image name (e.g., `my-app`)
 - `<SERVICE>` - Your Kubernetes deployment name (must match `deployment.yaml`)
 
-> **Important:** If you're using a region other than Jakarta (`ap-southeast-3`), change `AWS_REGION` accordingly.
-{: .prompt-warning }
-
 ### 2. Create `deployment.yaml`
-This is just the Kubernetes manifest, can contains kind of `deployments`, `services`, `ingress`, and more. Below is the minimal version:
+This is just the Kubernetes manifest, can contain `Kubernetes/Kind` like `deployments`, `services`, `ingress`, and more. Below is the minimal version and just example:
 
 ```yaml
 apiVersion: apps/v1
@@ -578,10 +573,10 @@ spec:
 
 **Explanation:**
 - This service will running on internal port `8080`
-- Can be accessed through HTTP:80 via Traefik Ingress
+- Can be accessed through `HTTP:80` via Traefik Ingress
 - Dont forget to change `<AWS_ACCOUNT_ID>` and `my-app` with your actual values
 
-> By default, Kubernetes has `liveness` and `readiness` probe to monitor your pods. You can create endpoints to check your app health. If your app is down, the control-plane can scheduled your app.
+> **INFO**: By default, Kubernetes provides `liveness` and `readiness` probes to monitor your pods. You can create endpoints to check your app’s health (`/livez` and `/readyz`). If your app goes down, the control plane can reschedule your app.
 {: .prompt-tip }
 
 ### 2. Push to Gitlab
@@ -593,20 +588,24 @@ git commit -m "Add CI/CD pipeline configuration"
 git push origin main
 ```
 
-Navigate to your GitLab project -> **CI/CD** -> **Pipelines** to monitor the pipeline execution. Below is the example of `Running` (blue indicator) jobs on tags `build`. The Gitlab Runner waiting for our Kubernetes pods to be running for build stage.
+Navigate to your GitLab project -> **CI/CD** -> **Pipelines** to monitor the pipeline execution. Below is the example of **Running** (blue indicator) jobs on `build` tags. The Gitlab Runner waiting for our Kubernetes pods to be running for `build-and-push` stage.
 
 ![Running CI/CD 1](/running-cicd-1.jpg)
 
 After pushing to the `main` branch, the Runner creates jobs for each stage. The pipeline shows:
-- **build** stage: Builds Docker image and pushes to ECR
+- **build-and-push** stage: Builds Docker image and pushes to ECR
 - **deploy** stage: Applies Kubernetes manifest and restarts deployment
 
-If nothing errors, the jobs would shows `passed` (green indicator). Meaning your stages are success. If there are errors, you can check the log message on your `Jobs`. Below is the example of success jobs
+If nothing errors, the jobs would shows **Passed** (green indicator). Meaning your stages are success. If there are errors, you can check the log message on your `Jobs`. Below is the example of success jobs
 
 ![Running CI/CD 2](/running-cicd-2.jpg)
 
 ## Conclusion
 You've successfully set up automated AWS ECR authentication for your Kubernetes cluster using IAM Roles and CronJobs. This setup ensures your cluster can always pull images from your private ECR registry without manual token management.
 
-You now have GitLab Runner successfully integrated with your Kubernetes cluster! The runner is configured to use AWS ECR credentials and is ready to execute CI/CD pipelines. With automated secret renewal in place, your pipeline will run smoothly without manual intervention. 
----
+You now have GitLab Runner successfully integrated with your Kubernetes cluster! The runner is configured to use AWS ECR credentials and is ready to execute CI/CD pipelines. With automated secret renewal in place, your pipeline will run smoothly without manual intervention.
+
+✅ **AWS ECR Setup** - Secure private registry with IAM Roles
+✅ **Automated Authentication** - Token renewal every 11 hours via CronJob
+✅ **GitLab Runner Integration** - Docker-in-Docker builds in Kubernetes
+✅ **Complete CI/CD Pipeline** - Automated build, push, and deployment
